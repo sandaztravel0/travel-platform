@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import Link from 'next/link';
 
 // This is a STARTER example page showing how the frontend talks to the backend.
 // It fetches approved listings (vehicles / drivers / stays) and shows them as cards.
@@ -19,6 +20,11 @@ export default function Home() {
 
   return (
     <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
+      <nav style={{ display: 'flex', justifyContent: 'flex-end', gap: 16, marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+        <Link href="/login">Log In</Link>
+        <Link href="/register">Sign Up</Link>
+        <Link href="/business/login" style={{ color: '#0b6' }}>Business Login</Link>
+      </nav>
       <h1>Explore Sri Lanka</h1>
       <p>Find vehicles, drivers, and stays for your trip.</p>
 
