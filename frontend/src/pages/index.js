@@ -2,11 +2,19 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-
-// This is a STARTER example page showing how the frontend talks to the backend.
-// It fetches approved listings (vehicles / drivers / stays) and shows them as cards.
+import HeroArt from '../components/HeroArt';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
+const FILTERS = [
+  { value: '', label: 'All' },
+  { value: 'vehicle', label: 'Vehicles' },
+  { value: 'driver', label: 'Drivers' },
+  { value: 'stay', label: 'Stays' },
+];
+
+const BADGE_CLASS = { vehicle: 'badge-vehicle', driver: 'badge-driver', stay: 'badge-stay' };
+const BADGE_LABEL = { vehicle: 'Vehicle', driver: 'Driver', stay: 'Stay' };
 
 export default function Home() {
   const router = useRouter();
@@ -22,7 +30,6 @@ export default function Home() {
       .catch((err) => console.error(err));
   }, [filter]);
 
-  // Check if a tourist or business is logged in (runs once, in the browser only)
   useEffect(() => {
     const storedUser = localStorage.getItem('user_info');
     const storedBusiness = localStorage.getItem('business_info');
@@ -37,81 +44,90 @@ export default function Home() {
     localStorage.removeItem('business_info');
     setUserInfo(null);
     setBusinessInfo(null);
-    router.reload(); // refresh so the nav updates cleanly
+    router.reload();
   };
 
   return (
-    <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
-      <nav style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 16, marginBottom: '1.5rem', fontSize: '0.9rem' }}>
-        {userInfo ? (
-          <>
-            <span>Hi, <strong>{userInfo.full_name}</strong></span>
-            <button onClick={handleLogout} style={navButtonStyle}>Log Out</button>
-          </>
-        ) : businessInfo ? (
-          <>
-            <span>Business: <strong>{businessInfo.business_name}</strong> ({businessInfo.status})</span>
-            <button onClick={handleLogout} style={navButtonStyle}>Log Out</button>
-          </>
-        ) : (
-          <>
-            <Link href="/login">Log In</Link>
-            <Link href="/register">Sign Up</Link>
-            <Link href="/business/login" style={{ color: '#0b6' }}>Business Login</Link>
-          </>
-        )}
+    <div className="container">
+      <nav className="topnav">
+        <span className="wordmark">Isle Road</span>
+        <div className="nav-links">
+          {userInfo ? (
+            <>
+              <span className="nav-welcome">Hi, {userInfo.full_name}</span>
+              <button className="btn btn-ghost" onClick={handleLogout}>Log out</button>
+            </>
+          ) : businessInfo ? (
+            <>
+              <span className="nav-welcome">{businessInfo.business_name} · {businessInfo.status}</span>
+              <button className="btn btn-ghost" onClick={handleLogout}>Log out</button>
+            </>
+          ) : (
+            <>
+              <Link href="/business/register">List your business</Link>
+              <Link href="/login">Log in</Link>
+              <Link href="/register" className="btn btn-primary">Sign up</Link>
+            </>
+          )}
+        </div>
       </nav>
 
-      <h1>Explore Sri Lanka</h1>
-      <p>Find vehicles, drivers, and stays for your trip.</p>
+      <section className="hero">
+        <div>
+          <h1>Sri Lanka, without the guesswork.</h1>
+          <p>
+            Book reviewed vehicles, drivers, and stays across the island —
+            then plan the roads between them, all in one place.
+          </p>
+        </div>
+        <HeroArt />
+      </section>
 
-      <div style={{ marginBottom: '1rem' }}>
-        {['', 'vehicle', 'driver', 'stay'].map((type) => (
+      <div className="trust-strip">
+        <span><strong>Reviewed by hand</strong> — every listing checked before it goes live</span>
+        <span><strong>Pay safely</strong> — bookings go through PayHere</span>
+        <span><strong>Real support</strong> — help on the ground if plans change</span>
+      </div>
+
+      <div className="section-heading">
+        <h2>Available now</h2>
+      </div>
+
+      <div className="filter-row">
+        {FILTERS.map((f) => (
           <button
-            key={type}
-            onClick={() => setFilter(type)}
-            style={{
-              marginRight: 8,
-              padding: '6px 14px',
-              background: filter === type ? '#0b6' : '#eee',
-              color: filter === type ? '#fff' : '#333',
-              border: 'none',
-              borderRadius: 6,
-              cursor: 'pointer',
-            }}
+            key={f.value}
+            className={`filter-pill ${filter === f.value ? 'active' : ''}`}
+            onClick={() => setFilter(f.value)}
           >
-            {type === '' ? 'All' : type}
+            {f.label}
           </button>
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '1rem' }}>
-        {listings.map((item) => (
-          <div key={item.id} style={{ border: '1px solid #ddd', borderRadius: 10, overflow: 'hidden' }}>
-            <img
-              src={item.images?.[0] || 'https://via.placeholder.com/300x180?text=No+Image'}
-              alt={item.title}
-              style={{ width: '100%', height: 160, objectFit: 'cover' }}
-            />
-            <div style={{ padding: '0.8rem' }}>
-              <h3 style={{ margin: '0 0 4px' }}>{item.title}</h3>
-              <p style={{ margin: 0, color: '#666' }}>{item.location_name}</p>
-              <p style={{ fontWeight: 'bold', marginTop: 6 }}>Rs. {item.price_per_day} / day</p>
+      {listings.length > 0 ? (
+        <div className="listing-grid">
+          {listings.map((item) => (
+            <div key={item.id} className="listing-card">
+              <img
+                className="listing-image"
+                src={item.images?.[0] || 'https://via.placeholder.com/300x180?text=Isle+Road'}
+                alt={item.title}
+              />
+              <div className="listing-body">
+                <span className={`listing-badge ${BADGE_CLASS[item.listing_type] || ''}`}>
+                  {BADGE_LABEL[item.listing_type] || item.listing_type}
+                </span>
+                <h3 className="listing-title">{item.title}</h3>
+                <p className="listing-location">{item.location_name}</p>
+                <p className="listing-price">Rs. {item.price_per_day} <span>/ day</span></p>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
-
-      {listings.length === 0 && <p>No listings found yet — add some via the business dashboard and approve them from admin.</p>}
+          ))}
+        </div>
+      ) : (
+        <p className="empty-state">No listings in this category yet — try another, or check back soon.</p>
+      )}
     </div>
   );
 }
-
-const navButtonStyle = {
-  padding: '4px 12px',
-  borderRadius: 6,
-  border: '1px solid #ccc',
-  background: '#fff',
-  cursor: 'pointer',
-  fontSize: '0.85rem',
-};
