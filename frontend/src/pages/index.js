@@ -19,6 +19,7 @@ const BADGE_LABEL = { vehicle: 'Vehicle', driver: 'Driver', stay: 'Stay' };
 export default function Home() {
   const router = useRouter();
   const [listings, setListings] = useState([]);
+  const [destinations, setDestinations] = useState([]);
   const [filter, setFilter] = useState('');
   const [userInfo, setUserInfo] = useState(null);
   const [businessInfo, setBusinessInfo] = useState(null);
@@ -29,6 +30,13 @@ export default function Home() {
       .then((res) => setListings(res.data))
       .catch((err) => console.error(err));
   }, [filter]);
+
+  useEffect(() => {
+    axios
+      .get(`${API_URL}/locations`)
+      .then((res) => setDestinations(res.data))
+      .catch((err) => console.error(err));
+  }, []);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user_info');
@@ -88,6 +96,27 @@ export default function Home() {
         <span><strong>Pay safely</strong> — bookings go through PayHere</span>
         <span><strong>Real support</strong> — help on the ground if plans change</span>
       </div>
+
+      {destinations.length > 0 && (
+        <>
+          <div className="section-heading">
+            <h2>Destinations</h2>
+          </div>
+          <div className="destination-scroll">
+            {destinations.map((loc) => (
+              <div key={loc.id} className="destination-card">
+                <img
+                  className="destination-image"
+                  src={loc.images?.[0] || 'https://via.placeholder.com/180x130?text=Isle+Road'}
+                  alt={loc.name}
+                />
+                <p className="destination-name">{loc.name}</p>
+                <p className="destination-district">{loc.district}</p>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
 
       <div className="section-heading">
         <h2>Available now</h2>
