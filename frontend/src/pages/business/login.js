@@ -35,49 +35,41 @@ export default function BusinessLogin() {
   };
 
   return (
-    <div style={styles.page}>
-      <div style={styles.card}>
-        <h1 style={styles.title}>Business login</h1>
-        <p style={styles.subtitle}>Manage your listings and bookings.</p>
+    <div className="auth-page">
+      <div className="auth-side">
+        <span className="wordmark" style={{ color: '#fff', marginBottom: 24 }}>Isle Road</span>
+        <h2>Manage your listings, anywhere.</h2>
+        <p>Log in to add listings, track bookings, and see what's pending approval.</p>
+      </div>
+      <div className="auth-main">
+        <div className="auth-card">
+          <h1>Business login</h1>
+          <p className="auth-subtitle">Manage your listings and bookings.</p>
 
-        {justRegistered && (
-          <p style={styles.success}>
-            Account created! It&apos;s pending admin approval — you can still log in and add listings, but they
-            won&apos;t appear publicly until approved.
+          {justRegistered && (
+            <p className="form-success">
+              Account created — it&apos;s pending admin approval. You can log in and add listings now; they&apos;ll
+              appear publicly once approved.
+            </p>
+          )}
+
+          <form onSubmit={handleSubmit} className="form-stack">
+            <input className="input" name="email" type="email" placeholder="Email" required onChange={handleChange} />
+            <input className="input" name="password" type="password" placeholder="Password" required onChange={handleChange} />
+
+            {error && <p className="form-error">{error}</p>}
+
+            <button className="btn btn-primary btn-block" type="submit" disabled={loading}>
+              {loading ? 'Logging in…' : 'Log in'}
+            </button>
+          </form>
+
+          <p className="form-footer">
+            Don&apos;t have a business account? <Link href="/business/register">Register</Link><br />
+            Traveler? <Link href="/login">Traveler login</Link>
           </p>
-        )}
-
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <input style={styles.input} name="email" type="email" placeholder="Email" required onChange={handleChange} />
-          <input style={styles.input} name="password" type="password" placeholder="Password" required onChange={handleChange} />
-
-          {error && <p style={styles.error}>{error}</p>}
-
-          <button style={styles.button} type="submit" disabled={loading}>
-            {loading ? 'Logging in...' : 'Log In'}
-          </button>
-        </form>
-
-        <p style={styles.footerText}>
-          Don&apos;t have a business account? <Link href="/business/register">Register</Link>
-        </p>
-        <p style={styles.footerText}>
-          Traveler? <Link href="/login">Traveler login</Link>
-        </p>
+        </div>
       </div>
     </div>
   );
 }
-
-const styles = {
-  page: { minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f7f6', fontFamily: 'sans-serif', padding: '1rem' },
-  card: { background: '#fff', padding: '2rem', borderRadius: 12, boxShadow: '0 2px 12px rgba(0,0,0,0.08)', width: '100%', maxWidth: 420 },
-  title: { margin: '0 0 4px', fontSize: '1.5rem' },
-  subtitle: { color: '#666', marginBottom: '1.2rem', fontSize: '0.9rem' },
-  form: { display: 'flex', flexDirection: 'column', gap: 10 },
-  input: { padding: '10px 12px', borderRadius: 8, border: '1px solid #ddd', fontSize: '0.95rem' },
-  button: { marginTop: 8, padding: '10px', borderRadius: 8, border: 'none', background: '#0b6', color: '#fff', fontSize: '1rem', cursor: 'pointer' },
-  error: { color: '#c0392b', fontSize: '0.85rem', margin: 0 },
-  success: { color: '#0b6', fontSize: '0.85rem', marginBottom: 8 },
-  footerText: { marginTop: 12, fontSize: '0.85rem', color: '#555', textAlign: 'center' },
-};
