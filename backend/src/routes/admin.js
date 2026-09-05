@@ -101,4 +101,106 @@ router.patch('/payouts/:id/paid', async (req, res) => {
   res.json(result.rows[0]);
 });
 
+// ---------- View ALL locations (for admin management/editing) ----------
+router.get('/locations', async (req, res) => {
+  const result = await pool.query(
+    `SELECT loc.*,
+            COALESCE(json_agg(li.image_url) FILTER (WHERE li.image_url IS NOT NULL), '[]') AS images
+     FROM locations loc
+     LEFT JOIN location_images li ON li.location_id = loc.id
+     GROUP BY loc.id
+     ORDER BY loc.created_at DESC`
+  );
+  res.json(result.rows);
+});
+
+// ---------- Edit a location ----------
+router.patch('/locations/:id', async (req, res) => {
+  const { name, district, description, latitude, longitude, category, is_active } = req.body;
+  const result = await pool.query(
+    `UPDATE locations SET
+       name = COALESCE($1, name),
+       district = COALESCE($2, district),
+       description = COALESCE($3, description),
+       latitude = COALESCE($4, latitude),
+       longitude = COALESCE($5, longitude),
+       category = COALESCE($6, category),
+       is_active = COALESCE($7, is_active)
+     WHERE id=$8 RETURNING *`,
+    [name, district, description, latitude, longitude, category, is_active, req.params.id]
+  );
+  if (result.rows.length === 0) return res.status(404).json({ error: 'Location not found' });
+  res.json(result.rows[0]);
+});
+
+// ---------- Delete a location ----------
+router.delete('/locations/:id', async (req, res) => {
+  await pool.query('DELETE FROM locations WHERE id=$1', [req.params.id]);
+  res.json({ message: 'Location deleted' });
+});
+
+// ---------- View all tourist users ----------
+router.get('/users', async (req, res) => {
+  const result = await pool.query(
+    'SELECT id, full_name, email, phone, country, created_at FROM users ORDER BY created_at DESC'
+  );
+  res.json(result.rows);
+});
+
+// ---------- View ALL businesses (any status) ----------
+router.get('/businesses', async (req, res) => {
+  const result = await pool.query(
+    'SELECT id, owner_name, business_name, email, phone, business_type, status, created_at FROM businesses ORDER BY created_at DESC'
+  );
+  res.json(result.rows);
+});
+
+// ---------- View all bookings (with tourist + listing info) ----------
+router.get('/bookings', async (req, res) => {
+  const result = await pool.query(
+    `SELECT b.*, u.full_name AS user_name, u.email AS user_email,
+            l.title AS listing_title, l.listing_type, biz.business_name
+     FROM bookings b
+     JOIN users u ON b.user_id = u.id
+     JOIN listings l ON b.listing_id = l.id
+     JOIN businesses biz ON l.business_id = biz.id
+     ORDER BY b.created_at DESC
+     LIMIT 200`
+  );
+  res.json(result.rows);
+});
+
+// ---------- Cancel a booking (admin override, e.g. for disputes) ----------
+router.patch('/bookings/:id/status', async (req, res) => {
+  const { status } = req.body; // 'confirmed' | 'cancelled' | 'completed'
+  const result = await pool.query(
+    'UPDATE bookings SET status=$1 WHERE id=$2 RETURNING *',
+    [status, req.params.id]
+  );
+  res.json(result.rows[0]);
+});
+
+// ---------- Get current platform settings (e.g. commission %) ----------
+router.get('/settings', async (req, res) => {
+  const result = await pool.query('SELECT key, value FROM settings');
+  const settings = {};
+  result.rows.forEach((row) => { settings[row.key] = row.value; });
+  // Fall back to the .env value if nothing is set in the database yet
+  if (!settings.commission_percent) {
+    settings.commission_percent = process.env.COMMISSION_PERCENT || '15';
+  }
+  res.json(settings);
+});
+
+// ---------- Update the commission percentage (applies to all NEW bookings from now on) ----------
+router.patch('/settings/commission', async (req, res) => {
+  const { commission_percent } = req.body;
+  await pool.query(
+    `INSERT INTO settings (key, value) VALUES ('commission_percent', $1)
+     ON CONFLICT (key) DO UPDATE SET value = $1`,
+    [String(commission_percent)]
+  );
+  res.json({ message: 'Commission updated', commission_percent });
+});
+
 module.exports = router;
