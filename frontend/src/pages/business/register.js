@@ -30,53 +30,45 @@ export default function BusinessRegister() {
   };
 
   return (
-    <div style={styles.page}>
-      <div style={styles.card}>
-        <h1 style={styles.title}>Register your business</h1>
-        <p style={styles.subtitle}>List your vehicles, driver services, or stays. An admin will review and approve your listing before it goes live.</p>
+    <div className="auth-page">
+      <div className="auth-side">
+        <span className="wordmark" style={{ color: '#fff', marginBottom: 24 }}>Isle Road</span>
+        <h2>Reach travelers already planning their trip.</h2>
+        <p>List your vehicles, driving services, or stay. Our team reviews every listing before it goes live.</p>
+      </div>
+      <div className="auth-main">
+        <div className="auth-card">
+          <h1>Register your business</h1>
+          <p className="auth-subtitle">List vehicles, driver services, or stays — reviewed before going live.</p>
 
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <input style={styles.input} name="owner_name" placeholder="Your full name" required onChange={handleChange} />
-          <input style={styles.input} name="business_name" placeholder="Business name" required onChange={handleChange} />
-          <input style={styles.input} name="email" type="email" placeholder="Email" required onChange={handleChange} />
-          <input style={styles.input} name="phone" placeholder="Phone number" required onChange={handleChange} />
+          <form onSubmit={handleSubmit} className="form-stack">
+            <input className="input" name="owner_name" placeholder="Your full name" required onChange={handleChange} />
+            <input className="input" name="business_name" placeholder="Business name" required onChange={handleChange} />
+            <input className="input" name="email" type="email" placeholder="Email" required onChange={handleChange} />
+            <input className="input" name="phone" placeholder="Phone number" required onChange={handleChange} />
 
-          <label style={styles.label}>What do you offer?</label>
-          <select style={styles.input} name="business_type" onChange={handleChange} value={form.business_type}>
-            <option value="vehicle">Vehicle rental</option>
-            <option value="driver">Driver for hire</option>
-            <option value="stay">Stay / accommodation</option>
-          </select>
+            <span className="field-label">What do you offer?</span>
+            <select className="input" name="business_type" onChange={handleChange} value={form.business_type}>
+              <option value="vehicle">Vehicle rental</option>
+              <option value="driver">Driver for hire</option>
+              <option value="stay">Stay / accommodation</option>
+            </select>
 
-          <input style={styles.input} name="password" type="password" placeholder="Password" required minLength={6} onChange={handleChange} />
+            <input className="input" name="password" type="password" placeholder="Password" required minLength={6} onChange={handleChange} />
 
-          {error && <p style={styles.error}>{error}</p>}
+            {error && <p className="form-error">{error}</p>}
 
-          <button style={styles.button} type="submit" disabled={loading}>
-            {loading ? 'Submitting...' : 'Register Business'}
-          </button>
-        </form>
+            <button className="btn btn-primary btn-block" type="submit" disabled={loading}>
+              {loading ? 'Submitting…' : 'Register business'}
+            </button>
+          </form>
 
-        <p style={styles.footerText}>
-          Already registered? <Link href="/business/login">Log in</Link>
-        </p>
-        <p style={styles.footerText}>
-          Just visiting Sri Lanka? <Link href="/register">Sign up as a traveler</Link>
-        </p>
+          <p className="form-footer">
+            Already registered? <Link href="/business/login">Log in</Link><br />
+            Just visiting? <Link href="/register">Sign up as a traveler</Link>
+          </p>
+        </div>
       </div>
     </div>
   );
 }
-
-const styles = {
-  page: { minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f7f6', fontFamily: 'sans-serif', padding: '1rem' },
-  card: { background: '#fff', padding: '2rem', borderRadius: 12, boxShadow: '0 2px 12px rgba(0,0,0,0.08)', width: '100%', maxWidth: 440 },
-  title: { margin: '0 0 4px', fontSize: '1.5rem' },
-  subtitle: { color: '#666', marginBottom: '1.2rem', fontSize: '0.9rem' },
-  form: { display: 'flex', flexDirection: 'column', gap: 10 },
-  label: { fontSize: '0.85rem', color: '#444', marginTop: 4 },
-  input: { padding: '10px 12px', borderRadius: 8, border: '1px solid #ddd', fontSize: '0.95rem' },
-  button: { marginTop: 8, padding: '10px', borderRadius: 8, border: 'none', background: '#0b6', color: '#fff', fontSize: '1rem', cursor: 'pointer' },
-  error: { color: '#c0392b', fontSize: '0.85rem', margin: 0 },
-  footerText: { marginTop: 12, fontSize: '0.85rem', color: '#555', textAlign: 'center' },
-};
