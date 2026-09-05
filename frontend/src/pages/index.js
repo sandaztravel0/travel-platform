@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 // This is a STARTER example page showing how the frontend talks to the backend.
 // It fetches approved listings (vehicles / drivers / stays) and shows them as cards.
@@ -8,8 +9,11 @@ import Link from 'next/link';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export default function Home() {
+  const router = useRouter();
   const [listings, setListings] = useState([]);
   const [filter, setFilter] = useState('');
+  const [userInfo, setUserInfo] = useState(null);
+  const [businessInfo, setBusinessInfo] = useState(null);
 
   useEffect(() => {
     axios
@@ -18,13 +22,46 @@ export default function Home() {
       .catch((err) => console.error(err));
   }, [filter]);
 
+  // Check if a tourist or business is logged in (runs once, in the browser only)
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user_info');
+    const storedBusiness = localStorage.getItem('business_info');
+    if (storedUser) setUserInfo(JSON.parse(storedUser));
+    if (storedBusiness) setBusinessInfo(JSON.parse(storedBusiness));
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('user_token');
+    localStorage.removeItem('user_info');
+    localStorage.removeItem('business_token');
+    localStorage.removeItem('business_info');
+    setUserInfo(null);
+    setBusinessInfo(null);
+    router.reload(); // refresh so the nav updates cleanly
+  };
+
   return (
     <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
-      <nav style={{ display: 'flex', justifyContent: 'flex-end', gap: 16, marginBottom: '1.5rem', fontSize: '0.9rem' }}>
-        <Link href="/login">Log In</Link>
-        <Link href="/register">Sign Up</Link>
-        <Link href="/business/login" style={{ color: '#0b6' }}>Business Login</Link>
+      <nav style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 16, marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+        {userInfo ? (
+          <>
+            <span>Hi, <strong>{userInfo.full_name}</strong></span>
+            <button onClick={handleLogout} style={navButtonStyle}>Log Out</button>
+          </>
+        ) : businessInfo ? (
+          <>
+            <span>Business: <strong>{businessInfo.business_name}</strong> ({businessInfo.status})</span>
+            <button onClick={handleLogout} style={navButtonStyle}>Log Out</button>
+          </>
+        ) : (
+          <>
+            <Link href="/login">Log In</Link>
+            <Link href="/register">Sign Up</Link>
+            <Link href="/business/login" style={{ color: '#0b6' }}>Business Login</Link>
+          </>
+        )}
       </nav>
+
       <h1>Explore Sri Lanka</h1>
       <p>Find vehicles, drivers, and stays for your trip.</p>
 
@@ -69,3 +106,12 @@ export default function Home() {
     </div>
   );
 }
+
+const navButtonStyle = {
+  padding: '4px 12px',
+  borderRadius: 6,
+  border: '1px solid #ccc',
+  background: '#fff',
+  cursor: 'pointer',
+  fontSize: '0.85rem',
+};
