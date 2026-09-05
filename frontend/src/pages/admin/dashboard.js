@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
+import Link from 'next/link';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -90,6 +91,13 @@ export default function AdminDashboard() {
         </div>
       </header>
 
+      <nav style={styles.quickLinks}>
+        <Link href="/admin/locations" style={styles.quickLink}>📍 Manage Locations</Link>
+        <Link href="/admin/users" style={styles.quickLink}>👥 Users & Businesses</Link>
+        <Link href="/admin/bookings" style={styles.quickLink}>📖 All Bookings</Link>
+        <Link href="/admin/settings" style={styles.quickLink}>⚙️ Settings</Link>
+      </nav>
+
       {message && <p style={styles.message}>{message}</p>}
 
       {/* Stats */}
@@ -172,6 +180,8 @@ const styles = {
   page: { fontFamily: 'sans-serif', background: '#f5f7f6', minHeight: '100vh', padding: '1.5rem' },
   header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' },
   headerTitle: { margin: 0, fontSize: '1.6rem' },
+  quickLinks: { display: 'flex', gap: 10, marginBottom: '1.5rem', flexWrap: 'wrap' },
+  quickLink: { padding: '8px 14px', borderRadius: 8, background: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', textDecoration: 'none', color: '#333', fontSize: '0.9rem' },
   logoutButton: { padding: '6px 14px', borderRadius: 6, border: '1px solid #ccc', background: '#fff', cursor: 'pointer' },
   message: { background: '#e8f8f0', color: '#0b6', padding: '8px 12px', borderRadius: 8, marginBottom: '1rem' },
   statsGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12, marginBottom: '2rem' },
