@@ -318,6 +318,46 @@ h1, h2, h3 {
 }
 
 /* ============================================
+   DESTINATIONS
+   ============================================ */
+
+.destination-scroll {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+  margin-bottom: 48px;
+  scrollbar-width: thin;
+}
+
+.destination-card {
+  flex: 0 0 auto;
+  width: 180px;
+  text-align: left;
+}
+
+.destination-image {
+  width: 180px;
+  height: 130px;
+  object-fit: cover;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  background: var(--surface);
+}
+
+.destination-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  margin: 10px 0 2px;
+  font-size: 1rem;
+}
+
+.destination-district {
+  color: var(--ink-muted);
+  font-size: 0.82rem;
+}
+
+/* ============================================
    AUTH PAGES (login / register)
    ============================================ */
 
