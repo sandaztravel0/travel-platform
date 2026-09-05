@@ -19,7 +19,6 @@ export default function UserRegister() {
     setLoading(true);
     try {
       await axios.post(`${API_URL}/auth/user/register`, form);
-      // Registration successful — send them to login
       router.push('/login?registered=1');
     } catch (err) {
       setError(err.response?.data?.error || 'Something went wrong. Please try again.');
@@ -29,45 +28,37 @@ export default function UserRegister() {
   };
 
   return (
-    <div style={styles.page}>
-      <div style={styles.card}>
-        <h1 style={styles.title}>Create your traveler account</h1>
-        <p style={styles.subtitle}>Sign up to book vehicles, drivers, and stays across Sri Lanka.</p>
+    <div className="auth-page">
+      <div className="auth-side">
+        <span className="wordmark" style={{ color: '#fff', marginBottom: 24 }}>Isle Road</span>
+        <h2>Your trip, held together in one place.</h2>
+        <p>Save your bookings, message drivers and hosts, and plan the route between them.</p>
+      </div>
+      <div className="auth-main">
+        <div className="auth-card">
+          <h1>Create your account</h1>
+          <p className="auth-subtitle">Sign up to book vehicles, drivers, and stays across Sri Lanka.</p>
 
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <input style={styles.input} name="full_name" placeholder="Full name" required onChange={handleChange} />
-          <input style={styles.input} name="email" type="email" placeholder="Email" required onChange={handleChange} />
-          <input style={styles.input} name="phone" placeholder="Phone number" onChange={handleChange} />
-          <input style={styles.input} name="country" placeholder="Country" onChange={handleChange} />
-          <input style={styles.input} name="password" type="password" placeholder="Password" required minLength={6} onChange={handleChange} />
+          <form onSubmit={handleSubmit} className="form-stack">
+            <input className="input" name="full_name" placeholder="Full name" required onChange={handleChange} />
+            <input className="input" name="email" type="email" placeholder="Email" required onChange={handleChange} />
+            <input className="input" name="phone" placeholder="Phone number" onChange={handleChange} />
+            <input className="input" name="country" placeholder="Country" onChange={handleChange} />
+            <input className="input" name="password" type="password" placeholder="Password" required minLength={6} onChange={handleChange} />
 
-          {error && <p style={styles.error}>{error}</p>}
+            {error && <p className="form-error">{error}</p>}
 
-          <button style={styles.button} type="submit" disabled={loading}>
-            {loading ? 'Creating account...' : 'Sign Up'}
-          </button>
-        </form>
+            <button className="btn btn-primary btn-block" type="submit" disabled={loading}>
+              {loading ? 'Creating account…' : 'Sign up'}
+            </button>
+          </form>
 
-        <p style={styles.footerText}>
-          Already have an account? <Link href="/login">Log in</Link>
-        </p>
-        <p style={styles.footerText}>
-          Own a vehicle, work as a driver, or run a stay?{' '}
-          <Link href="/business/register">Register as a business</Link>
-        </p>
+          <p className="form-footer">
+            Already have an account? <Link href="/login">Log in</Link><br />
+            Own a vehicle, drive, or run a stay? <Link href="/business/register">Register as a business</Link>
+          </p>
+        </div>
       </div>
     </div>
   );
 }
-
-const styles = {
-  page: { minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f7f6', fontFamily: 'sans-serif', padding: '1rem' },
-  card: { background: '#fff', padding: '2rem', borderRadius: 12, boxShadow: '0 2px 12px rgba(0,0,0,0.08)', width: '100%', maxWidth: 420 },
-  title: { margin: '0 0 4px', fontSize: '1.5rem' },
-  subtitle: { color: '#666', marginBottom: '1.2rem', fontSize: '0.9rem' },
-  form: { display: 'flex', flexDirection: 'column', gap: 10 },
-  input: { padding: '10px 12px', borderRadius: 8, border: '1px solid #ddd', fontSize: '0.95rem' },
-  button: { marginTop: 8, padding: '10px', borderRadius: 8, border: 'none', background: '#0b6', color: '#fff', fontSize: '1rem', cursor: 'pointer' },
-  error: { color: '#c0392b', fontSize: '0.85rem', margin: 0 },
-  footerText: { marginTop: 12, fontSize: '0.85rem', color: '#555', textAlign: 'center' },
-};
