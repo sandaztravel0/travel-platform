@@ -8,6 +8,7 @@ const bookingRoutes = require('./routes/bookings');
 const adminRoutes = require('./routes/admin');
 const paymentRoutes = require('./routes/payments');
 const locationRoutes = require('./routes/locations');
+const uploadRoutes = require('./routes/upload');
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use('/api/bookings', bookingRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/locations', locationRoutes);
+app.use('/api/upload', uploadRoutes);
 
 app.get('/', (req, res) => {
   res.send('Sri Lanka Travel Platform API is running.');
