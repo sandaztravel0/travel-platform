@@ -2,14 +2,16 @@ import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import Link from 'next/link';
-import ImageUploader from '../../components/ImageUploader';
+import MultiImageUploader from '../../components/MultiImageUploader';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
+const EMPTY_FORM = { name: '', district: '', description: '', category: '', latitude: '', longitude: '', image_urls: [] };
 
 export default function AdminLocations() {
   const router = useRouter();
   const [locations, setLocations] = useState([]);
-  const [form, setForm] = useState({ name: '', district: '', description: '', category: '', latitude: '', longitude: '', image_url: '' });
+  const [form, setForm] = useState(EMPTY_FORM);
   const [editingId, setEditingId] = useState(null);
   const [message, setMessage] = useState('');
 
@@ -39,14 +41,14 @@ export default function AdminLocations() {
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const resetForm = () => {
-    setForm({ name: '', district: '', description: '', category: '', latitude: '', longitude: '', image_url: '' });
+    setForm(EMPTY_FORM);
     setEditingId(null);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const api = authedApi();
-    const { image_url, ...locationData } = form;
+    const { image_urls, ...locationData } = form;
 
     try {
       if (editingId) {
@@ -54,8 +56,8 @@ export default function AdminLocations() {
         setMessage('Location updated.');
       } else {
         const res = await api.post('/admin/locations', locationData);
-        if (image_url) {
-          await api.post(`/admin/locations/${res.data.id}/images`, { image_urls: [image_url] });
+        if (image_urls.length > 0) {
+          await api.post(`/admin/locations/${res.data.id}/images`, { image_urls });
         }
         setMessage('Location added.');
       }
@@ -69,7 +71,8 @@ export default function AdminLocations() {
   const handleEdit = (loc) => {
     setForm({
       name: loc.name || '', district: loc.district || '', description: loc.description || '',
-      category: loc.category || '', latitude: loc.latitude || '', longitude: loc.longitude || '', image_url: '',
+      category: loc.category || '', latitude: loc.latitude || '', longitude: loc.longitude || '',
+      image_urls: loc.images || [],
     });
     setEditingId(loc.id);
   };
@@ -79,6 +82,28 @@ export default function AdminLocations() {
     const api = authedApi();
     await api.delete(`/admin/locations/${id}`);
     loadLocations();
+  };
+
+  // While editing an existing location, a new photo is saved to the server right away.
+  // While building a new one, photos are just queued locally until "Add Location" is pressed.
+  const handleImageAdd = async (url) => {
+    if (editingId) {
+      const api = authedApi();
+      try {
+        await api.post(`/admin/locations/${editingId}/images`, { image_urls: [url] });
+        setForm((f) => ({ ...f, image_urls: [...f.image_urls, url] }));
+        loadLocations();
+      } catch (err) {
+        setMessage(err.response?.data?.error || 'Failed to add photo.');
+      }
+    } else {
+      setForm((f) => ({ ...f, image_urls: [...f.image_urls, url] }));
+    }
+  };
+
+  const handleImageRemove = (index) => {
+    // Only offered for a not-yet-saved location — removes it from the queue before submit.
+    setForm((f) => ({ ...f, image_urls: f.image_urls.filter((_, i) => i !== index) }));
   };
 
   return (
@@ -108,14 +133,15 @@ export default function AdminLocations() {
             <input style={styles.input} type="number" step="any" name="latitude" placeholder="Latitude (optional, e.g. 7.9570)" value={form.latitude} onChange={handleChange} />
             <input style={styles.input} type="number" step="any" name="longitude" placeholder="Longitude (optional, e.g. 80.7603)" value={form.longitude} onChange={handleChange} />
           </div>
-          {!editingId && (
-            <ImageUploader
-              tokenKey="admin_token"
-              value={form.image_url}
-              onUploaded={(url) => setForm({ ...form, image_url: url })}
-              label="Location photo"
-            />
-          )}
+
+          <MultiImageUploader
+            tokenKey="admin_token"
+            images={form.image_urls}
+            onAdd={handleImageAdd}
+            onRemove={editingId ? undefined : handleImageRemove}
+            label="Location photos"
+          />
+
           <div style={{ display: 'flex', gap: 8 }}>
             <button style={styles.saveBtn} type="submit">{editingId ? 'Update' : 'Add Location'}</button>
             {editingId && <button style={styles.cancelBtn} type="button" onClick={resetForm}>Cancel</button>}
@@ -132,7 +158,7 @@ export default function AdminLocations() {
               />
               <div style={styles.cardBody}>
                 <strong>{loc.name}</strong>
-                <div style={styles.meta}>{loc.district} · {loc.category}</div>
+                <div style={styles.meta}>{loc.district} · {loc.category} · {loc.images?.length || 0} photo(s)</div>
                 <div style={styles.actions}>
                   <button style={styles.editBtn} onClick={() => handleEdit(loc)}>Edit</button>
                   <button style={styles.deleteBtn} onClick={() => handleDelete(loc.id)}>Delete</button>
