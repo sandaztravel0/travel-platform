@@ -60,6 +60,7 @@ export default function Home() {
       <nav className="topnav">
         <span className="wordmark">Isle Road</span>
         <div className="nav-links">
+          <Link href="/explore">Explore</Link>
           {userInfo ? (
             <>
               <span className="nav-welcome">Hi, {userInfo.full_name}</span>
@@ -102,10 +103,11 @@ export default function Home() {
         <>
           <div className="section-heading">
             <h2>Destinations</h2>
+            <Link href="/explore">See all →</Link>
           </div>
           <div className="destination-scroll">
-            {destinations.map((loc) => (
-              <div key={loc.id} className="destination-card">
+            {destinations.slice(0, 8).map((loc) => (
+              <Link key={loc.id} href="/explore" className="destination-card">
                 <img
                   className="destination-image"
                   src={loc.images?.[0] || 'https://via.placeholder.com/180x130?text=Isle+Road'}
@@ -113,7 +115,7 @@ export default function Home() {
                 />
                 <p className="destination-name">{loc.name}</p>
                 <p className="destination-district">{loc.district}</p>
-              </div>
+              </Link>
             ))}
           </div>
         </>
