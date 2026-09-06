@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
+import ImageUploader from '../../components/ImageUploader';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -142,7 +143,11 @@ export default function BusinessDashboard() {
             </>
           )}
 
-          <input className="input" name="image_url" placeholder="Image URL (paste a link to a photo)" value={form.image_url} onChange={handleChange} />
+          <ImageUploader
+            tokenKey="business_token"
+            value={form.image_url}
+            onUploaded={(url) => setForm({ ...form, image_url: url })}
+          />
 
           <button className="btn btn-primary btn-block" type="submit" disabled={submitting}>
             {submitting ? 'Submitting…' : 'Submit for approval'}
