@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
-import ImageUploader from '../../components/ImageUploader';
+import MultiImageUploader from '../../components/MultiImageUploader';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -14,7 +14,7 @@ const EMPTY_FORM = {
   capacity: '',
   vehicle_type: '',
   amenities: '',
-  image_url: '',
+  image_urls: [],
 };
 
 export default function BusinessDashboard() {
@@ -66,12 +66,12 @@ export default function BusinessDashboard() {
     setSubmitting(true);
     setMessage('');
     const api = authedApi();
-    const { image_url, ...listingData } = form;
+    const { image_urls, ...listingData } = form;
 
     try {
       const res = await api.post('/listings', listingData);
-      if (image_url) {
-        await api.post(`/listings/${res.data.listing.id}/images`, { image_urls: [image_url] });
+      if (image_urls.length > 0) {
+        await api.post(`/listings/${res.data.listing.id}/images`, { image_urls });
       }
       setMessage('Listing submitted! It will go live once an admin approves it.');
       setForm(EMPTY_FORM);
@@ -143,10 +143,13 @@ export default function BusinessDashboard() {
             </>
           )}
 
-          <ImageUploader
+          <MultiImageUploader
             tokenKey="business_token"
-            value={form.image_url}
-            onUploaded={(url) => setForm({ ...form, image_url: url })}
+            images={form.image_urls}
+            onAdd={(url) => setForm((f) => ({ ...f, image_urls: [...f.image_urls, url] }))}
+            onRemove={(i) => setForm((f) => ({ ...f, image_urls: f.image_urls.filter((_, idx) => idx !== i) }))}
+            max={3}
+            label="Photos"
           />
 
           <button className="btn btn-primary btn-block" type="submit" disabled={submitting}>
