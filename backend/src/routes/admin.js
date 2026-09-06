@@ -55,16 +55,16 @@ router.patch('/listings/:id/status', asyncHandler(async (req, res) => {
 
 // ---------- Add a new location (e.g. Sigiriya, Ella) ----------
 router.post('/locations', asyncHandler(async (req, res) => {
-  const { name, district, description, category } = req.body;
+  const { name, district, description, category, best_time } = req.body;
   const latitude = toNullableNumber(req.body.latitude);
   const longitude = toNullableNumber(req.body.longitude);
 
   if (!name) return res.status(400).json({ error: 'Location name is required' });
 
   const result = await pool.query(
-    `INSERT INTO locations (name, district, description, latitude, longitude, category)
-     VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`,
-    [name, district || null, description || null, latitude, longitude, category || null]
+    `INSERT INTO locations (name, district, description, latitude, longitude, category, best_time)
+     VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
+    [name, district || null, description || null, latitude, longitude, category || null, best_time || null]
   );
   res.status(201).json(result.rows[0]);
 }));
@@ -136,7 +136,7 @@ router.get('/locations', asyncHandler(async (req, res) => {
 
 // ---------- Edit a location ----------
 router.patch('/locations/:id', asyncHandler(async (req, res) => {
-  const { name, district, description, category, is_active } = req.body;
+  const { name, district, description, category, is_active, best_time } = req.body;
   const latitude = toNullableNumber(req.body.latitude);
   const longitude = toNullableNumber(req.body.longitude);
 
@@ -148,9 +148,10 @@ router.patch('/locations/:id', asyncHandler(async (req, res) => {
        latitude = COALESCE($4, latitude),
        longitude = COALESCE($5, longitude),
        category = COALESCE($6, category),
-       is_active = COALESCE($7, is_active)
-     WHERE id=$8 RETURNING *`,
-    [name || null, district || null, description || null, latitude, longitude, category || null, is_active ?? null, req.params.id]
+       is_active = COALESCE($7, is_active),
+       best_time = COALESCE($8, best_time)
+     WHERE id=$9 RETURNING *`,
+    [name || null, district || null, description || null, latitude, longitude, category || null, is_active ?? null, best_time || null, req.params.id]
   );
   if (result.rows.length === 0) return res.status(404).json({ error: 'Location not found' });
   res.json(result.rows[0]);
