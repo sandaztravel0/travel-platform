@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import Link from 'next/link';
+import ImageUploader from '../../components/ImageUploader';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -104,11 +105,16 @@ export default function AdminLocations() {
           </select>
           <textarea style={{ ...styles.input, minHeight: 70 }} name="description" placeholder="Description" value={form.description} onChange={handleChange} />
           <div style={{ display: 'flex', gap: 8 }}>
-            <input style={styles.input} name="latitude" placeholder="Latitude" value={form.latitude} onChange={handleChange} />
-            <input style={styles.input} name="longitude" placeholder="Longitude" value={form.longitude} onChange={handleChange} />
+            <input style={styles.input} type="number" step="any" name="latitude" placeholder="Latitude (optional, e.g. 7.9570)" value={form.latitude} onChange={handleChange} />
+            <input style={styles.input} type="number" step="any" name="longitude" placeholder="Longitude (optional, e.g. 80.7603)" value={form.longitude} onChange={handleChange} />
           </div>
           {!editingId && (
-            <input style={styles.input} name="image_url" placeholder="Image URL (paste a link to a photo)" value={form.image_url} onChange={handleChange} />
+            <ImageUploader
+              tokenKey="admin_token"
+              value={form.image_url}
+              onUploaded={(url) => setForm({ ...form, image_url: url })}
+              label="Location photo"
+            />
           )}
           <div style={{ display: 'flex', gap: 8 }}>
             <button style={styles.saveBtn} type="submit">{editingId ? 'Update' : 'Add Location'}</button>
