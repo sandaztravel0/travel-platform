@@ -26,7 +26,7 @@ export default function BusinessLogin() {
       const res = await axios.post(`${API_URL}/auth/business/login`, form);
       localStorage.setItem('business_token', res.data.token);
       localStorage.setItem('business_info', JSON.stringify(res.data.business));
-      router.push('/');
+      router.push('/business/dashboard');
     } catch (err) {
       setError(err.response?.data?.error || 'Invalid email or password.');
     } finally {
