@@ -6,7 +6,7 @@ import MultiImageUploader from '../../components/MultiImageUploader';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
-const EMPTY_FORM = { name: '', district: '', description: '', category: '', latitude: '', longitude: '', image_urls: [] };
+const EMPTY_FORM = { name: '', district: '', description: '', category: '', best_time: '', latitude: '', longitude: '', image_urls: [] };
 
 export default function AdminLocations() {
   const router = useRouter();
@@ -71,7 +71,7 @@ export default function AdminLocations() {
   const handleEdit = (loc) => {
     setForm({
       name: loc.name || '', district: loc.district || '', description: loc.description || '',
-      category: loc.category || '', latitude: loc.latitude || '', longitude: loc.longitude || '',
+      category: loc.category || '', best_time: loc.best_time || '', latitude: loc.latitude || '', longitude: loc.longitude || '',
       image_urls: loc.images || [],
     });
     setEditingId(loc.id);
@@ -129,6 +129,7 @@ export default function AdminLocations() {
             <option value="city">City</option>
           </select>
           <textarea style={{ ...styles.input, minHeight: 70 }} name="description" placeholder="Description" value={form.description} onChange={handleChange} />
+          <input style={styles.input} name="best_time" placeholder="Best time to visit (e.g. Dec – Apr)" value={form.best_time} onChange={handleChange} />
           <div style={{ display: 'flex', gap: 8 }}>
             <input style={styles.input} type="number" step="any" name="latitude" placeholder="Latitude (optional, e.g. 7.9570)" value={form.latitude} onChange={handleChange} />
             <input style={styles.input} type="number" step="any" name="longitude" placeholder="Longitude (optional, e.g. 80.7603)" value={form.longitude} onChange={handleChange} />
