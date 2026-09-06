@@ -250,6 +250,7 @@ h1, h2, h3 {
 }
 
 .listing-card {
+  display: block;
   background: var(--surface);
   border-radius: var(--radius);
   overflow: hidden;
