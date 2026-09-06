@@ -68,6 +68,7 @@ export default function Home() {
           ) : businessInfo ? (
             <>
               <span className="nav-welcome">{businessInfo.business_name} · {businessInfo.status}</span>
+              <Link href="/business/dashboard">My listings</Link>
               <button className="btn btn-ghost" onClick={handleLogout}>Log out</button>
             </>
           ) : (
