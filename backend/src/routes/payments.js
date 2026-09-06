@@ -9,7 +9,7 @@ const { verifyToken } = require('../middleware/auth');
 router.post('/initiate/:bookingId', verifyToken, async (req, res) => {
   try {
     const bookingResult = await pool.query(
-      `SELECT b.*, u.full_name, u.email, u.phone, l.title FROM bookings b
+      `SELECT b.*, u.full_name, u.email, u.phone, u.country, l.title FROM bookings b
        JOIN users u ON b.user_id = u.id
        JOIN listings l ON b.listing_id = l.id
        WHERE b.id=$1`,
@@ -36,6 +36,9 @@ router.post('/initiate/:bookingId', verifyToken, async (req, res) => {
     await pool.query('UPDATE bookings SET payhere_order_id=$1 WHERE id=$2', [orderId, booking.id]);
 
     res.json({
+      checkout_url: process.env.PAYHERE_MODE === 'live'
+        ? 'https://www.payhere.lk/pay/checkout'
+        : 'https://sandbox.payhere.lk/pay/checkout',
       merchant_id: merchantId,
       order_id: orderId,
       items: booking.title,
@@ -46,6 +49,9 @@ router.post('/initiate/:bookingId', verifyToken, async (req, res) => {
       last_name: booking.full_name?.split(' ').slice(1).join(' ') || '',
       email: booking.email,
       phone: booking.phone,
+      address: 'N/A',
+      city: 'Colombo',
+      country: booking.country || 'Sri Lanka',
       // These URLs must be publicly accessible once deployed:
       return_url: `${process.env.APP_URL}/payment/success`,
       cancel_url: `${process.env.APP_URL}/payment/cancel`,
