@@ -138,7 +138,7 @@ export default function Home() {
       {listings.length > 0 ? (
         <div className="listing-grid">
           {listings.map((item) => (
-            <div key={item.id} className="listing-card">
+            <Link key={item.id} href={`/listing/${item.id}`} className="listing-card">
               <img
                 className="listing-image"
                 src={item.images?.[0] || 'https://via.placeholder.com/300x180?text=Isle+Road'}
@@ -152,7 +152,7 @@ export default function Home() {
                 <p className="listing-location">{item.location_name}</p>
                 <p className="listing-price">Rs. {item.price_per_day} <span>/ day</span></p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       ) : (
