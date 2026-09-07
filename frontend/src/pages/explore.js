@@ -49,7 +49,9 @@ export default function Explore() {
     if (stored) setFavorites(JSON.parse(stored));
   }, []);
 
-  const toggleFavorite = (id) => {
+  const toggleFavorite = (e, id) => {
+    e.preventDefault();
+    e.stopPropagation();
     setFavorites((prev) => {
       const next = prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id];
       localStorage.setItem('favorite_destinations', JSON.stringify(next));
@@ -123,7 +125,7 @@ export default function Explore() {
       {filtered.length > 0 ? (
         <div className="explore-grid">
           {filtered.map((d) => (
-            <div key={d.id} className="explore-card">
+            <Link key={d.id} href={`/destination/${d.id}`} className="explore-card">
               <div className="explore-card-media">
                 <img
                   className="explore-card-image"
@@ -133,7 +135,7 @@ export default function Explore() {
                 {d.best_time && <span className="best-time-badge">{d.best_time}</span>}
                 <button
                   className="favorite-btn"
-                  onClick={() => toggleFavorite(d.id)}
+                  onClick={(e) => toggleFavorite(e, d.id)}
                   aria-label="Save to favorites"
                 >
                   <HeartIcon filled={favorites.includes(d.id)} />
@@ -144,7 +146,7 @@ export default function Explore() {
                 <h3 className="explore-card-name">{d.name}</h3>
                 {d.description && <p className="explore-card-desc">{d.description}</p>}
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       ) : (
