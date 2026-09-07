@@ -25,11 +25,17 @@ export default function Home() {
   const [businessInfo, setBusinessInfo] = useState(null);
 
   useEffect(() => {
+    if (!router.isReady) return;
     axios
-      .get(`${API_URL}/listings`, { params: filter ? { listing_type: filter } : {} })
+      .get(`${API_URL}/listings`, {
+        params: {
+          ...(filter ? { listing_type: filter } : {}),
+          ...(router.query.location ? { location_id: router.query.location } : {}),
+        },
+      })
       .then((res) => setListings(res.data))
       .catch((err) => console.error(err));
-  }, [filter]);
+  }, [filter, router.isReady, router.query.location]);
 
   useEffect(() => {
     axios
@@ -107,7 +113,7 @@ export default function Home() {
           </div>
           <div className="destination-scroll">
             {destinations.slice(0, 8).map((loc) => (
-              <Link key={loc.id} href="/explore" className="destination-card">
+              <Link key={loc.id} href={`/destination/${loc.id}`} className="destination-card">
                 <img
                   className="destination-image"
                   src={loc.images?.[0] || 'https://via.placeholder.com/180x130?text=Isle+Road'}
@@ -124,6 +130,13 @@ export default function Home() {
       <div className="section-heading">
         <h2>Available now</h2>
       </div>
+
+      {router.query.location && (
+        <p style={{ marginTop: -12, marginBottom: 16, fontSize: '0.9rem', color: 'var(--ink-muted)' }}>
+          Showing listings near this destination.{' '}
+          <Link href="/" style={{ color: 'var(--gold-dark)', fontWeight: 600 }}>Clear filter</Link>
+        </p>
+      )}
 
       <div className="filter-row">
         {FILTERS.map((f) => (
