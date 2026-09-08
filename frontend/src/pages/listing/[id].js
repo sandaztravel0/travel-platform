@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import Link from 'next/link';
+import useUsdRate, { formatUsd } from '../../lib/useUsdRate';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 const BADGE_CLASS = { vehicle: 'badge-vehicle', driver: 'badge-driver', stay: 'badge-stay' };
@@ -37,6 +38,7 @@ export default function ListingDetail() {
   const [endDate, setEndDate] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const usdRate = useUsdRate();
 
   useEffect(() => {
     if (!id) return;
@@ -158,6 +160,9 @@ export default function ListingDetail() {
           <p className="listing-price" style={{ fontSize: '1.4rem' }}>
             Rs. {listing.price_per_day} <span>/ day</span>
           </p>
+          {formatUsd(listing.price_per_day, usdRate) && (
+            <span className="usd-price">{formatUsd(listing.price_per_day, usdRate)} / day</span>
+          )}
 
           <div className="form-stack" style={{ marginTop: 16 }}>
             <span className="field-label">Start date</span>
@@ -169,6 +174,7 @@ export default function ListingDetail() {
             {days > 0 && (
               <p style={{ fontSize: '0.88rem', color: 'var(--ink-muted)' }}>
                 {days} day{days > 1 ? 's' : ''} · Estimated total <strong style={{ color: 'var(--ink)' }}>Rs. {estimatedTotal}</strong>
+                {formatUsd(estimatedTotal, usdRate) && ` (${formatUsd(estimatedTotal, usdRate)})`}
               </p>
             )}
 
