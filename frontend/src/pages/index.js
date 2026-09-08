@@ -3,6 +3,7 @@ import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import HeroArt from '../components/HeroArt';
+import useUsdRate, { formatUsd } from '../lib/useUsdRate';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -23,6 +24,7 @@ export default function Home() {
   const [filter, setFilter] = useState('');
   const [userInfo, setUserInfo] = useState(null);
   const [businessInfo, setBusinessInfo] = useState(null);
+  const usdRate = useUsdRate();
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -166,6 +168,9 @@ export default function Home() {
                 <h3 className="listing-title">{item.title}</h3>
                 <p className="listing-location">{item.location_name}</p>
                 <p className="listing-price">Rs. {item.price_per_day} <span>/ day</span></p>
+                {formatUsd(item.price_per_day, usdRate) && (
+                  <span className="usd-price">{formatUsd(item.price_per_day, usdRate)}</span>
+                )}
               </div>
             </Link>
           ))}
