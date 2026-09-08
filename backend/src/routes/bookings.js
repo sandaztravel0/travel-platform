@@ -23,10 +23,13 @@ router.post('/', verifyToken, requireRole('user'), async (req, res) => {
       return res.status(400).json({ error: 'This listing is already booked for the selected dates' });
     }
 
-    // 3. Calculate price + commission
+    // 3. Calculate price + commission (uses the admin-configurable rate, falls back to .env)
     const days = Math.max(1, Math.ceil((new Date(end_date) - new Date(start_date)) / (1000 * 60 * 60 * 24)));
     const totalPrice = days * Number(listing.price_per_day);
-    const commissionPercent = Number(process.env.COMMISSION_PERCENT || 15);
+
+    const settingResult = await pool.query("SELECT value FROM settings WHERE key='commission_percent'");
+    const commissionPercent = Number(settingResult.rows[0]?.value || process.env.COMMISSION_PERCENT || 15);
+
     const commissionAmount = +(totalPrice * (commissionPercent / 100)).toFixed(2);
     const payoutAmount = +(totalPrice - commissionAmount).toFixed(2);
 

@@ -152,6 +152,13 @@ CREATE TABLE live_locations (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
+-- PLATFORM SETTINGS (key-value store, e.g. commission_percent — editable from admin dashboard)
+CREATE TABLE settings (
+    key VARCHAR(100) PRIMARY KEY,
+    value TEXT NOT NULL,
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
 -- REVIEWS
 CREATE TABLE reviews (
     id SERIAL PRIMARY KEY,
