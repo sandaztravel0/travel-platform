@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import Link from 'next/link';
+import Footer from '../../components/Footer';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -70,6 +71,7 @@ export default function DestinationDetail() {
   const embedUrl = toYoutubeEmbed(destination.video_url);
 
   return (
+    <>
     <div className="container">
       <nav className="topnav">
         <Link href="/" className="wordmark">Isle Road</Link>
@@ -169,6 +171,8 @@ export default function DestinationDetail() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+      <Footer />
+    </>
   );
 }

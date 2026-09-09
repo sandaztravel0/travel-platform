@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
+import Footer from '../components/Footer';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -72,6 +73,7 @@ export default function Explore() {
   });
 
   return (
+    <>
     <div className="container">
       <nav className="topnav">
         <Link href="/" className="wordmark">Isle Road</Link>
@@ -152,6 +154,8 @@ export default function Explore() {
       ) : (
         <p className="empty-state">No destinations match those filters yet.</p>
       )}
-    </div>
+      </div>
+      <Footer />
+    </>
   );
 }

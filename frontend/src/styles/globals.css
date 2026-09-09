@@ -659,6 +659,51 @@ h1, h2, h3 {
   margin-bottom: 4px;
 }
 
+/* ============================================
+   TRUST BADGES + FOOTER
+   ============================================ */
+
+.verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--forest);
+  background: #E7EFE9;
+  padding: 3px 9px;
+  border-radius: 999px;
+  margin-left: 6px;
+}
+
+.cancellation-note {
+  font-size: 0.82rem;
+  color: var(--forest);
+  background: #EDF3EE;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  margin-top: 10px;
+}
+
+.cancellation-note a { color: var(--gold-dark); font-weight: 600; }
+
+.site-footer {
+  border-top: 1px solid var(--border);
+  margin-top: 60px;
+  padding: 26px 0;
+}
+
+.site-footer-inner {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+}
+
+.site-footer-inner a:hover { color: var(--ink); }
+
 @media (max-width: 860px) {
   .hero { grid-template-columns: 1fr; }
   .hero-art { display: none; }

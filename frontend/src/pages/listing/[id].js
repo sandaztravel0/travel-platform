@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import Link from 'next/link';
+import Footer from '../../components/Footer';
 import useUsdRate, { formatUsd } from '../../lib/useUsdRate';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
@@ -140,6 +141,7 @@ export default function ListingDetail() {
           <span className={`listing-badge ${BADGE_CLASS[listing.listing_type] || ''}`} style={{ marginTop: 20 }}>
             {BADGE_LABEL[listing.listing_type] || listing.listing_type}
           </span>
+          <span className="verified-badge">✓ Verified</span>
           <h1 style={{ marginTop: 8, fontSize: '1.8rem' }}>{listing.title}</h1>
           {listing.location_name && <p className="listing-location">{listing.location_name}</p>}
 
@@ -180,6 +182,10 @@ export default function ListingDetail() {
 
             {error && <p className="form-error">{error}</p>}
 
+            <p className="cancellation-note">
+              Free cancellation up to 48 hours before your trip. <Link href="/policies">See policy</Link>
+            </p>
+
             <button className="btn btn-primary btn-block" onClick={handleBook} disabled={loading}>
               {loading ? 'Redirecting to payment…' : 'Book & pay'}
             </button>
@@ -192,6 +198,7 @@ export default function ListingDetail() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

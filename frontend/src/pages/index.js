@@ -3,6 +3,7 @@ import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import HeroArt from '../components/HeroArt';
+import Footer from '../components/Footer';
 import useUsdRate, { formatUsd } from '../lib/useUsdRate';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
@@ -64,6 +65,7 @@ export default function Home() {
   };
 
   return (
+    <>
     <div className="container">
       <nav className="topnav">
         <span className="wordmark">Isle Road</span>
@@ -165,6 +167,7 @@ export default function Home() {
                 <span className={`listing-badge ${BADGE_CLASS[item.listing_type] || ''}`}>
                   {BADGE_LABEL[item.listing_type] || item.listing_type}
                 </span>
+                <span className="verified-badge">✓ Verified</span>
                 <h3 className="listing-title">{item.title}</h3>
                 <p className="listing-location">{item.location_name}</p>
                 <p className="listing-price">Rs. {item.price_per_day} <span>/ day</span></p>
@@ -178,6 +181,8 @@ export default function Home() {
       ) : (
         <p className="empty-state">No listings in this category yet — try another, or check back soon.</p>
       )}
-    </div>
+      </div>
+      <Footer />
+    </>
   );
 }
